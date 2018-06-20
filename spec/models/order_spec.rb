@@ -19,6 +19,10 @@ describe Order do
     its(:comments) { should be_blank }
   end
 
+  describe 'transferring' do
+
+  end
+
   describe 'creating from bare donation' do
     before(:each) { @order = Order.new_from_donation(10.00, AccountCode.default_account_code, create(:customer)) }
     it 'should not be completed' do ; @order.should_not be_completed ; end

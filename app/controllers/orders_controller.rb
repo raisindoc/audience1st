@@ -34,19 +34,22 @@ class OrdersController < ApplicationController
 
   def update
     @order = Order.find params[:id]
-    items = Item.find(params[:items].keys) rescue []
-    if items.empty?
+    @items = Item.find(params[:items].keys) rescue []
+    # transfer order to another customer, or refund item(s)?
+    return transfer_order if params[:commit] =~ /transfer/i
+
+    if @items.empty?
       redirect_to(order_path(@order), :alert => 'No items selected for refund.') and return
-    elsif items.any? { |i| i.order_id != @order.id }
+    elsif @items.any? { |i| i.order_id != @order.id }
       redirect_to(order_path(@order), :alert => 'Some items not part of this order.') and return
-    elsif items.any? { |i| !i.cancelable? }
+    elsif @items.any? { |i| !i.cancelable? }
       redirect_to(order_path(@order), :alert => 'Some items are not refundable.') and return
     end
-    amount_to_refund = items.map(&:amount).sum
+    amount_to_refund = @items.map(&:amount).sum
     by_whom = current_user()
     begin
       Item.transaction do
-        items.each do |item|
+        @items.each do |item|
           Txn.add_audit_record(
             :txn_type => 'refund',
             :comments => item.description_for_audit_txn,
@@ -70,6 +73,18 @@ class OrdersController < ApplicationController
       else "Please refund #{formatted_amount} in cash to customer."
       end
     redirect_to(order_path(@order), :notice => notice)
+  end
+
+  private
+
+  def transfer_order
+    # transfer @order to another customer. this helper just returns to the main dispatch
+    # action so it's fine to render, redirect, etc. in here
+    @recipient = Customer.where(:id => Customer.id_from_route(params["recipient_#{@order.id}"])).first
+    redirect_to(order_path(@order), :alert => 'You must select a patron to transfer to.') unless
+      @recipient.kind_of? Customer
+    @order.transfer_to(@recipient)
+    redirect_to(order_path(@order), :notice => "Entire order transferred to #{@recipient.full_name}.")
   end
 
 end

@@ -58,5 +58,6 @@
           = submit_tag "#{submit_name} Checked Items", :confirm => deletion_warning_for(order)
         Or transfer entire order to:
         = text_field_tag 'recipient_name', '', :size => 20, :class => '_autocomplete', 'data-resultfield' => "recipient_#{order.id}"
+        = hidden_field_tag "recipient_#{order.id}"
         = submit_tag 'Transfer', :confirm => transfer_warning_for(order)
         
