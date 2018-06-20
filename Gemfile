@@ -23,6 +23,7 @@ gem 'jquery-rails', '= 4.0.5'
 gem 'jquery-ui-rails', '= 5.0.5'
 gem 'mechanize'
 gem 'nokogiri'
+gem 'rails-ujs'
 gem 'pothoven-attachment_fu'
 gem 'protected_attributes'      # remove once we migrate to Strong Parameters
 gem 'responders', '~> 2.0'

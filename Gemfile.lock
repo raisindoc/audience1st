@@ -271,6 +271,8 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
+    rails-ujs (0.1.0)
+      railties (>= 3.1)
     rails_12factor (0.0.3)
       rails_serve_static_assets
       rails_stdout_logging
@@ -456,6 +458,7 @@ DEPENDENCIES
   rack-test
   rack-timeout
   rails (= 4.2.9)
+  rails-ujs
   rails_12factor
   rake
   rb-readline
