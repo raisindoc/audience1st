@@ -19,7 +19,7 @@
     = render :partial => 'donation_search', :locals => {:params => @params}
     = submit_tag "Search"
     = submit_tag(@export_label) unless @donations.empty?
-    = link_to "Add/Edit Account Codes", account_codes_path, :class => 'genButton'
+    = link_to "Add/Edit Account Codes", account_codes_path, :class => 'btn btn-primary'
 
 #pageDiv
   - unless @donations.empty?

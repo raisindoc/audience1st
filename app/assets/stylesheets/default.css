@@ -187,21 +187,21 @@ a:hover {
 	text-decoration: underline;
 }
 
-a.genButton {
-	background-color: #671e22;
-	color: white;
-	padding: 2px;
-	text-decoration: none;
-        border: 1px solid #671e22;
-}
+/* a.genButton { */
+/* 	background-color: #671e22; */
+/* 	color: white; */
+/* 	padding: 2px; */
+/* 	text-decoration: none; */
+/*         border: 1px solid #671e22; */
+/* } */
 
-a.genButton:hover {
-	text-decoration: none;
-	color: #800000;
-	background-color: white;
-	border: 1px solid #800000;
-	padding: 0;
-}
+/* a.genButton:hover { */
+/* 	text-decoration: none; */
+/* 	color: #800000; */
+/* 	background-color: white; */
+/* 	border: 1px solid #800000; */
+/* 	padding: 0; */
+/* } */
 
 /* basic paragraphs and headers */
 
