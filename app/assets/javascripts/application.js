@@ -3,6 +3,7 @@
 //= require_self
 //= require jquery
 //= require jquery-ui
+//= require_tree bootstrap
 //= require_tree .
 
 var A1 = {};                    // toplevel namespace for all our stuff
