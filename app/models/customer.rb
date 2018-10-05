@@ -9,9 +9,6 @@ class Customer < ActiveRecord::Base
 
   include Authentication
   include Authentication::ByPassword
-  include Authentication::ByCookieToken
-
-
   require 'csv'
 
   has_and_belongs_to_many :labels

@@ -1,16 +1,14 @@
 class ApplicationController < ActionController::Base
   helper :all
-
-  protect_from_forgery
-
   force_ssl if Rails.env.production?
+  protect_from_forgery
   
   include AuthenticatedSystem
   include FilenameUtils
+  rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
   
   require 'csv'
 
-  rescue_from ActionController::InvalidAuthenticityToken, :with => :session_expired
   before_action :maintenance_mode?
 
   private
@@ -107,13 +105,7 @@ class ApplicationController < ActionController::Base
   # filter that requires user to login before accessing account
 
   def is_logged_in
-    unless logged_in?
-      flash[:notice] = "Please log in or create an account in order to view this page."
-      redirect_to login_path
-      nil
-    else
-      current_user
-    end
+    redirect_to(login_path, :notice => "Please log in or create an account in order to view this page.") unless @current_user
   end
 
   def temporarily_unavailable
@@ -157,34 +149,6 @@ class ApplicationController < ActionController::Base
       flash[:notice] << " Email confirmation was NOT sent because there isn't"
       flash[:notice] << " a valid email address in your Contact Info."
     end
-  end
-
-  def create_session(u = nil)
-    logout_keeping_session!
-    @user = u || yield(params)
-    if @user && @user.errors.empty?
-      # Protects against session fixation attacks, causes request forgery
-      # protection if user resubmits an earlier form using back
-      # button. Uncomment if you understand the tradeoffs.
-      # reset_session
-      self.current_user = @user
-      # 'remember me' checked?
-      new_cookie_flag = (params[:remember_me] == "1")
-      handle_remember_cookie! new_cookie_flag
-      # finally: reset all store-related session state UNLESS the login
-      # was performed as part of a checkout flow
-      reset_shopping unless @gCheckoutInProgress
-      session[:new_session] = true
-      redirect_after_login(@user)
-    end
-  end
-
-  protected
-
-  def new_session?
-    # returns true the FIRST time it's called on a session.  Used for
-    # displaying login-time messages, etc.
-    session.delete(:new_session)
   end
   
 end

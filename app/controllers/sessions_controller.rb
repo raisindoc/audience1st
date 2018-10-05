@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
 
   def new
-    redirect_to customer_path(current_user) and return if logged_in?
+    redirect_to customer_path(@current_user) and return if @current_user
     @page_title = "Login or Create Account"
     if (@gCheckoutInProgress)
       @cart = find_cart
@@ -11,7 +11,7 @@ class SessionsController < ApplicationController
   end
 
   def new_from_secret
-    redirect_after_login(current_user) and return if logged_in?
+    redirect_after_login(@current_user) and return if @current_user
   end
 
   def create
@@ -48,7 +48,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    logout_killing_session!
+    logout_keeping_session!
     redirect_to login_path, :notice => "You have been logged out."
   end
 

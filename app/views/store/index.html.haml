@@ -1,7 +1,7 @@
 = render :partial => 'store/check_javascript'
 = sales_banners_for(@what, @subscriber, @next_season_subscriber)
 
-- unless current_user
+- unless @current_user
   %p.subscription_msg2
     %strong Already a subscriber?
     = link_to "Sign in to your account", login_path

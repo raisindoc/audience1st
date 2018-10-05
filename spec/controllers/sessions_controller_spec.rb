@@ -64,7 +64,7 @@ describe SessionsController do
               post(:create, @login_params)
             end
             it "kills existing login"        do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params); end    
-            it "logs me in"                  do post(:create, @login_params); controller.send(:logged_in?).should  be_truthy  end    
+            it "logs me in"                  do post(:create, @login_params); controller.send(:current_user).should  be_truthy  end    
             it "sets/resets/expires cookie"  do expect(controller).to receive(:handle_remember_cookie!).with(want_remember_me); post(:create, @login_params) end
             it "sends a cookie"              do expect(controller).to receive(:send_remember_cookie!);  post(:create, @login_params) end
             it 'redirects to the home page'  do post(:create, @login_params); response.should redirect_to(@home_page)   end
@@ -97,7 +97,10 @@ describe SessionsController do
     it 'logs out keeping session'   do expect(controller).to receive(:logout_keeping_session!); post(:create, @login_params) end
     it 'flashes an error'           do post(:create, @login_params); flash[:alert].should =~ /Couldn't log you in as 'quentin@email.com'/ end
     it 'renders the log in page'    do post(:create, @login_params); response.should render_template('new')  end
-    it "doesn't log me in"          do post(:create, @login_params); controller.send(:logged_in?).should == false end
+    it "doesn't log me in"          do
+      post(:create, @login_params)
+      expect(controller.send(:current_user)).to be_falsy
+    end
     it "doesn't send password back" do 
       @login_params[:password] = 'FROBNOZZ'
       post(:create, @login_params)
@@ -112,7 +115,7 @@ describe SessionsController do
     before do 
       login_as create(:customer, :email => 'quentin@email.com')
     end
-    it 'logs me out'                   do expect(controller).to receive(:logout_killing_session!); do_destroy end
+    it 'logs me out'                   do expect(controller).to receive(:logout_keeping_session!); do_destroy end
     it 'redirects me to the home page' do do_destroy; response.should be_redirect     end
   end
   

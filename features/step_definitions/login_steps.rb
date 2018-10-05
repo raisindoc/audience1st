@@ -57,4 +57,3 @@ Then /(?:customer )"(.*) (.*)" should (not )?be logged in$/ do |first,last,no|
     page.should have_content("Signed in as #{@customer.full_name}")
   end
 end
-

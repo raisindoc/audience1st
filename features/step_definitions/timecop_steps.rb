@@ -45,6 +45,15 @@ Given /^(?:I|we) jump in our Delorean and return to the present$/ do
   Timecop.return
 end
 
+When /^I abandon the site for (\d+) (minute|day)s?$/ do |n,what|
+  n = n.to_i
+  if what == 'minutes'
+    Timecop.travel n.minutes.from_now
+  else
+    Timecop.travel n.days.from_now
+  end
+end
+
 After do
   Timecop.return
 end
