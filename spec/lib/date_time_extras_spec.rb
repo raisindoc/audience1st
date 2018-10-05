@@ -38,25 +38,25 @@ describe "Date/time extras" do
         stub_month_and_day(@m, @d)
       end
       it "should calculate the beginning of the 2005 season" do
-        Time.current.at_beginning_of_season(2005).should == Time.local(2005,@m,@d)
+        Time.current.at_beginning_of_season(2005).should == Time.zone.local(2005,@m,@d)
       end
       it "should calculate the end of the 2005 season" do
-        Time.current.at_end_of_season(2005).should == (Time.local(2006,@m,@d,23,59,59) - 1.day)
+        Time.current.at_end_of_season(2005).should == (Time.new(2006,@m,@d,23,59,59) - 1.day)
       end
       it "should calculate beginning of current season when calendar date precedes season start date" do
         y = Time.current.year
-        Time.local(y, @m, @d-1).at_beginning_of_season.should == Time.local(y-1,@m,@d)
+        Time.new(y, @m, @d-1).at_beginning_of_season.should == Time.new(y-1,@m,@d)
       end
       it "should calculate beginning of current season when calendar date is after season start date" do
         y = Time.current.year
-        Time.local(y, @m, @d+1).at_beginning_of_season.should == Time.local(y,@m,@d)
+        Time.new(y, @m, @d+1).at_beginning_of_season.should == Time.new(y,@m,@d)
       end
     end
     context "for season 9/1/09 - 8/31/10" do
       before(:each) do
         stub_month_and_day(9,1)
-        @start = Time.local(2009,9,1)
-        @end = Time.local(2010,8,31,23,59,59)
+        @start = Time.new(2009,9,1)
+        @end = Time.new(2010,8,31,23,59,59)
       end
       it "should be identified as the 2009 season" do
         d = @start + 1.day
@@ -94,19 +94,16 @@ describe "Date/time extras" do
         @date = Date.civil(2011, 1, 21)
       end
       it "if different year" do
-        @time.at_beginning_of_season.to_date.should == @date.at_beginning_of_season
+        expect(@time.at_beginning_of_season.to_date).to eq(@date.at_beginning_of_season)
       end
       it "if year given explicitly" do
-        @time.at_beginning_of_season(2008).to_date.should ==
-          @date.at_beginning_of_season(2008)
+        expect(@time.at_beginning_of_season(2008).to_date).to eq(@date.at_beginning_of_season(2008))
       end
       it "going the other way - different year" do
-        @date.at_beginning_of_season.to_time.should ==
-          @time.at_beginning_of_season
+        expect(@date.at_beginning_of_season).to eq(@time.at_beginning_of_season.to_date)
       end
       it "going the other way - explicit year" do
-        @date.at_beginning_of_season(2008).to_time.should ==
-          @time.at_beginning_of_season(2008)
+        expect(@date.at_beginning_of_season(2008)).to eq(@time.at_beginning_of_season(2008).to_date)
       end
     end
   end
@@ -119,7 +116,7 @@ describe "Date/time extras" do
     context "when param is not a hash" do
       it "should parse if given a string" do
         str = "February 3, 2008, 8:15PM"
-        Time.from_param(str).should == Time.local(2008,2,3,20,15)
+        Time.from_param(str).should == Time.zone.local(2008,2,3,20,15)
       end
       it "should raise an exception if given garbage" do
         lambda {
@@ -132,7 +129,7 @@ describe "Date/time extras" do
         @h = {:year=>2008, :month=>1, :day=>2}
       end
       it "should parse a hash containing only date info" do
-        Time.from_param(@h).should == Time.local(2008,1,2,0,0,0)
+        Time.from_param(@h).should == Time.zone.new(2008,1,2,0,0,0)
       end
       it "should parse a hash containing date and hour" do
         Time.from_param(@h.merge({:hour => 17})).should ==

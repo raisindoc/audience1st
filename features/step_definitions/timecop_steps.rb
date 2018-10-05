@@ -54,6 +54,10 @@ When /^I abandon the site for (\d+) (minute|day)s?$/ do |n,what|
   end
 end
 
+When /^I abandon the site for longer than the session timeout$/ do
+  Timecop.travel(1.minute.from_now + Rails.application.config.session_timeout)
+end
+
 After do
   Timecop.return
 end

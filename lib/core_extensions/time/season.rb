@@ -14,7 +14,7 @@ module CoreExtensions
         startday = Option.season_start_day
         if (oldyear)
           # year given: just return start of that season
-          ::Time.local(oldyear.to_i, startmon, startday)
+          ::Time.zone.local(oldyear.to_i, startmon, startday)
         else
           startmon = 1 unless (1..12).include?(startmon)
           startday = 1 unless (1..31).include?(startday)
@@ -36,7 +36,7 @@ module CoreExtensions
 
       def within_season?(year)
         year = year.year unless year.kind_of?(Numeric)
-        start = ::Time.local(year,Option.season_start_month,
+        start = ::Time.zone.local(year,Option.season_start_month,
           Option.season_start_day).at_beginning_of_season
         (start <= self) && (self <= start.at_end_of_season)
       end
@@ -50,7 +50,7 @@ module CoreExtensions
         def from_param(param,default=::Time.current)
           return default if param.blank?
           return ::Time.zone.parse(param) unless param.kind_of?(Hash)
-          t = ::Time.local(0,1,1,0,0,0)
+          t = ::Time.zone.local(0,1,1,0,0,0)
           [:year,:month,:day,:hour].each do |component|
             t = t.change(component => param[component].to_i) if param.has_key?(component)
           end

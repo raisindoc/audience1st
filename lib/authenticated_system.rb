@@ -26,7 +26,7 @@ module AuthenticatedSystem
     if @user && @user.errors.empty?
       self.current_user = @user
       # 'remember me' checked?
-      remember_me! if params[:remember_me]
+      create_or_refresh_remember_cookie! if params[:remember_me]
       # finally: reset all store-related session state UNLESS the login
       # was performed as part of a checkout flow
       reset_shopping unless @gCheckoutInProgress
@@ -57,7 +57,6 @@ module AuthenticatedSystem
   # However, **all session state variables should be unset here**.
   def logout_keeping_session!
     # Kill server-side auth cookie
-    @current_user.forget_me if @current_user.is_a? Customer
     @current_user = false     # not logged in, and don't do it for me
     session.delete(:cid)
     reset_shopping unless @gCheckoutInProgress
@@ -66,16 +65,16 @@ module AuthenticatedSystem
   
   # Attempt to login by an expiring token in the cookie.
   def login_from_cookie
-    if (cookie_customer_id = cookies.signed[:cid]  &&
-        user = Customer.find_by_id(cookie_customer_id))
+    if ((cookie_customer_id = cookies.signed[:cid])  &&
+        (user = Customer.find_by_id(cookie_customer_id)))
       self.current_user = user
-      remember_me!
+      create_or_refresh_remember_cookie!
       self.current_user
     end
   end
 
   # Refresh the cookie auth token if it exists, create it otherwise
-  def remember_me!
+  def create_or_refresh_remember_cookie!
     cookies.signed[:cid] = {
       :value => current_user.id,
       :expires => 30.days.from_now

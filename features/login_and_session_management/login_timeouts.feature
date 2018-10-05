@@ -6,8 +6,7 @@ Feature: timeouts forcing re-authentication
 
 Background:
 
-  Given it is currently 1:00pm, January 1, 2017
-  And customer "Tom Foolery" exists
+  Given customer "Tom Foolery" exists
   And I am on the login page
 
 Scenario: no timeout when "remember me" is used
@@ -32,4 +31,15 @@ Scenario: timeout when "remember me" is not used
   When I login with the correct credentials for customer "Tom Foolery"
   And I abandon the site for 120 minutes
   And I visit the home page for customer "Tom Foolery"
+  Then I should see "Please log in"
+
+Scenario: timeout when guest checkout is abandoned
+
+  Given the boolean setting "Allow guest checkout" is "true"
+  And I am not logged in
+  And my cart contains the following tickets:
+    | show    | qty | type    | price | showdate             |
+    | Chicago |   3 | General |  7.00 | May 15, 2010, 8:00pm |
+  When I abandon the site for longer than the session timeout
+  And I visit the checkout page
   Then I should see "Please log in"
