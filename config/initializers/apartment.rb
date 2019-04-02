@@ -1,3 +1,7 @@
+require 'apartment/elevators/subdomain'
+
+Rails.application.config.middleware.use 'Apartment::Elevators::Subdomain'
+Apartment::Elevators::Subdomain.excluded_subdomains = ['www', 'my-theater']
 # This code (from https://github.com/influitive/apartment/issues/508)
 # works around Apartment gem issue
 # https://github.com/zdennis/activerecord-import/issues/233 
