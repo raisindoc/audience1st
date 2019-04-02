@@ -58,22 +58,22 @@ Apartment.configure do |config|
   #
   # config.tenant_names = lambda{ Customer.pluck(:tenant_name) }
   # config.tenant_names = ['tenant1', 'tenant2']
-  config.tenant_names = {
-     'tenant1' => {
-       adapter: 'postgresql',
-       host: 'some_server',
-       port: 5555,
-       database: 'postgres' # this is not the name of the tenant's db
-                            # but the name of the database to connect to before creating the tenant's db
-                            # mandatory in postgresql
-     },
-     'tenant2' => {
-       adapter:  'postgresql',
-       database: 'postgres' # this is not the name of the tenant's db
-                            # but the name of the database to connect to before creating the tenant's db
-                            # mandatory in postgresql
-     }
-   }
+  # config.tenant_names = {
+  #   'tenant1' => {
+  #     adapter: 'postgresql',
+  #     host: 'some_server',
+  #     port: 5555,
+  #     database: 'postgres' # this is not the name of the tenant's db
+  #                          # but the name of the database to connect to before creating the tenant's db
+  #                          # mandatory in postgresql
+  #   },
+  #   'tenant2' => {
+  #     adapter:  'postgresql',
+  #     database: 'postgres' # this is not the name of the tenant's db
+  #                          # but the name of the database to connect to before creating the tenant's db
+  #                          # mandatory in postgresql
+  #   }
+  # }
   # config.tenant_names = lambda do
   #   Tenant.all.each_with_object({}) do |tenant, hash|
   #     hash[tenant.name] = tenant.db_configuration
@@ -81,14 +81,14 @@ Apartment.configure do |config|
   # end
   #
   # config.tenant_names = lambda { ToDo_Tenant_Or_User_Model.pluck :database }
-  # config.tenant_names = Figaro.env.tenant_names!.split(',')
+  config.tenant_names = Figaro.env.tenant_names!.split(',')
 
   # By default, and only when not using PostgreSQL schemas, Apartment will prepend the environment
   # to the tenant name to ensure there is no conflict between your environments.
   # This is mainly for the benefit of your development and test environments.
   # Uncomment the line below if you want to disable this behaviour in production.
   #
-  # config.prepend_environment = !Rails.env.production?
+  config.prepend_environment = !Rails.env.production?
 end
 
 # Setup a custom Tenant switching middleware. The Proc should return the name of the Tenant that
