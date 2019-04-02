@@ -92,7 +92,7 @@ Apartment.configure do |config|
   # This is mainly for the benefit of your development and test environments.
   # Uncomment the line below if you want to disable this behaviour in production.
   #
-  config.prepend_environment = !Rails.env.production?
+  # config.prepend_environment = !Rails.env.production?
 end
 
 # Setup a custom Tenant switching middleware. The Proc should return the name of the Tenant that
