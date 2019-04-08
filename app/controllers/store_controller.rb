@@ -189,6 +189,13 @@ class StoreController < ApplicationController
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
     @recipient =  recipient_from_params
+   
+    recipient_email = params[:customer][:email]
+    if recipient_email == @customer.email
+        flash.now[:alert] = "Gift recipient email can not be your own"
+        render :action => :shipping_address
+        return
+    end
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
