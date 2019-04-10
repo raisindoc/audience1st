@@ -64,12 +64,9 @@ Scenario: option setting can disable guest checkout
     | Priscilla |   3 | General |  7.00 | May 16, 2010, 8:00pm |
   Then I should not see "Checkout as Guest"    
 
-Scenario: no gift purchase allowed for guest checkout given gift purchase is false
-    When I go to the store page 
-    Then I should not see "This order is a gift"
+Scenario: no gift purchase allowed for guest checkout
+  When I go to the store page 
+  Then I should not see "This order is a gift"
 
-Scenario: no gift purchase allowed for guest checkout given gift purchase is false
-    When I go to the store page 
-    Then I should not see "This order is a gift"
 
 
