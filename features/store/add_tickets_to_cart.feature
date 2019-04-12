@@ -10,7 +10,7 @@ Background:
   | qty | type    | price  | showdate                |
   |   3 | General | $15.00 | October 1, 2010, 7:00pm |
   And I am logged in as customer "Tom Foolery"
-  And   I go to the store page
+  And I go to the store page
 
 Scenario:  Add regular tickets to my order with no donation
 
@@ -31,4 +31,12 @@ Scenario: Add regular tickets to my order with a donation
   And the cart should contain 2 "General" tickets for "October 1, 2010, 7:00pm"
   And the cart should contain a donation of $17.00 to "General Fund"
 
-  
+Scenario: Allow gift purchase if logged in and approved by box office manager
+  Given the setting "allow gift tickets" is "true"
+  And I go to the store page 
+  Then I should see "This order is a gift" 
+
+Scenario: Prohibit gift purchase if logged in but unapproved by box office manager
+  Given the setting "allow gift tickets" is "false"
+  And I go to the store page 
+  Then I should not see "This order is a gift" 

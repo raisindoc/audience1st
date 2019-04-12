@@ -36,6 +36,16 @@ Feature: Successful checkout with credit card
     And customer "Tom Foolery" should have 0 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
     And customer "Al Smith" should have 2 "General" tickets for "Chicago" on May 15, 2010, 8:00pm
 
+  Scenario: unsuccessful gift order for customer gifting to themself
+    Given my gift order contains the following tickets:
+      | show    | qty | type    | price | showdate             |
+      | Chicago |   2 | General |  7.00 | May 15, 2010, 8:00pm |
+    Then I should be on the shipping info page for customer "Tom Foolery"
+    When I fill in the ".billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, joe3@yahoo.com"
+    And I proceed to checkout
+    Then I should be on the shipping info page
+    And I should see "Gift recipient email can not be your own"
+
   Scenario: successful subscription purchase
 
     Given a "Super Sub" subscription available to anyone for $60.00
