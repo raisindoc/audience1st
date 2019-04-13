@@ -12,9 +12,12 @@ Background:
          | Janey      | Weigandt  | janey@mail.com | false            | 11 Main St #1 | blurgle  | blurgle               | Oak  | CA    | 99949 | 2010-01-01 04:00:00 | 2010-01-01 |
     And customer customer "Jesus Jones" exists
     And customer "Jesus Jones" should have a birthday of "May 12"
+    And the setting "boxoffice_daemon_notify" is "mjw@mail.com"
+    And the setting "send_birthday_reminders" is "2"
 
 Scenario: Notify Box Office Manager 3 days before
 
     Given today is "May 9"
-    Then I should receive email with "Jesus Jones"
+    Then an email should be sent to "MaryJane" matching
+
     
