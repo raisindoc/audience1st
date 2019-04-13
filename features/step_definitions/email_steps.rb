@@ -184,7 +184,6 @@ end
 Then /^all attachments should not be blank$/ do
   current_email_attachments.each do |attachment|
     expect(attachment.read.size).to_not eql 0
->>>>>>> master
   end
 end
 
