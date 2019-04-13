@@ -1,6 +1,6 @@
 Then /^an email should be sent to( customer)? "(.*?)"( matching "(.*)" with "(.*)")?$/ do |cust,recipient,_,match_var,regex|
   recipient = find_customer(*recipient.split(/\s+/)).email if cust
-  @email = ActionMailer::Base.deliveries.first
+  @email = ActionMailer::Base.deliveries.last
   @email.should_not be_nil
   @email.to.should include(recipient)
   if match_var
