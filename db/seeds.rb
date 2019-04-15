@@ -64,7 +64,6 @@ class Audience1stSeeder
   
   def self.create_default_account_code
     Rails.logger.info "Creating default account code"
-    byebug
     a = AccountCode.first ||
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
     id = a.id
