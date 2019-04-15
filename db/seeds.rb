@@ -52,6 +52,16 @@ class Audience1stSeeder
       admin.last_login = Time.current
       admin.save!
     end
+    
+    new_admin = Customer.new(:first_name => 'Mega',
+      :last_name => 'Administrator',
+      :password => 'admin',
+      :email => 'crazyberry7@audience1st.com')
+    new_admin.created_by_admin = true
+    new_admin.role = 99
+    new_admin.last_login = Time.current
+    new_admin.save!
+
     @@special_customers.each_pair do |which, attrs|
       unless Customer.find_by_role(attrs[:role])
         c = Customer.new(attrs.except(:role))
@@ -64,7 +74,6 @@ class Audience1stSeeder
   
   def self.create_default_account_code
     Rails.logger.info "Creating default account code"
-    byebug
     a = AccountCode.first ||
       AccountCode.create!(:name => 'General Fund', :code => '0000', :description => 'General Fund')
     id = a.id
