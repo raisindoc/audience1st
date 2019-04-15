@@ -7,7 +7,6 @@ Then /^an email should be sent to( customer)? "(.*?)" containing "(.*)"$/ do |cu
 end
 Then /^a birthday email should be sent to( customer)? "(.*?)" containing "(.*)"$/ do |cust,recipient,link|
   recipient = find_customer(*recipient.split(/\s+/)).email if cust
-  byebug
   Customer.notify_upcoming_birthdays()
   @email = ActionMailer::Base.deliveries.last
   @email.should_not be_nil
