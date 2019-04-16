@@ -65,6 +65,8 @@ en:
 
     accept_terms_of_sale: >
       By completing your order, you agree to the <a href="#" onclick="alert('%{terms_of_sale_text}')">terms of sale</a>.
+    gift_diff_email_notice: >
+      Please enter a gift recipient email different from your own
 
     errors:
 

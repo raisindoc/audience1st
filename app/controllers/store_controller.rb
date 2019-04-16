@@ -192,7 +192,7 @@ class StoreController < ApplicationController
    
     recipient_email = params[:customer][:email]
     if recipient_email == @customer.email
-        flash.now[:alert] = "Gift recipient email can not be your own"
+        flash.now[:alert] = I18n.t('store.gift_diff_email_notice')
         render :action => :shipping_address
         return
     end
