@@ -189,8 +189,9 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    @recipient =  recipient_from_params
-   
+    recipient = recipient_from_params
+    @recipient, matching =  recipient[0], recipient[1]
+    
     recipient_email = params[:customer][:email]
     if recipient_email == @customer.email
         flash.now[:alert] = "Gift recipient email can not be your own"
@@ -205,8 +206,16 @@ class StoreController < ApplicationController
       return
     end
     @recipient.created_by_admin = @is_admin if @recipient.new_record?
+    
+    if matching == "found_matching_customer"
+        @recipient.matching = true
+    else
+        @recipient.matching = false     
+    end
     @recipient.save!
     @cart.customer = @recipient
+   
+ 
     @cart.save!
     redirect_to_checkout
   end
@@ -215,6 +224,9 @@ class StoreController < ApplicationController
 
   def checkout
     redirect_to store_path, :alert => t('store.errors.empty_order') if @cart.cart_empty?
+    if @cart.customer.matching
+        flash.now[:notice] = I18n.t('store.gift_recipient_on_file')  
+    end
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message = (@cart.includes_regular_vouchers? ? Option.precheckout_popup : '')
@@ -287,7 +299,7 @@ class StoreController < ApplicationController
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
     recipient = Customer.find_unique(try_customer)
-    (recipient && recipient.valid_as_gift_recipient?) ? recipient : try_customer
+    (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end
 
   def remember_cart_in_session!
