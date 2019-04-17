@@ -179,8 +179,8 @@ class StoreController < ApplicationController
 
   def shipping_address
     @mailable = @cart.includes_mailable_items?
-    @recipient ||= (@cart.customer || Customer.new) and return if request.get?
-
+    @recipient ||= Customer.new and return if request.get?
+    
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
     @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
@@ -193,14 +193,8 @@ class StoreController < ApplicationController
     recipient = recipient_from_params
     @recipient, matching =  recipient[0], recipient[1]
     recipient_email = params[:customer][:email]
-=begin 
-    if matching == "found_matching_customer"
-		session[:matching] = true
-    else
- 		session[:matching] = false
-    end
-=end
-	session[:matching] = (matching == "found_matching_customer") ? true : false
+
+    session[:matching] = (matching == "found_matching_customer") ? true : false
     if recipient_email == @customer.email
         flash.now[:alert] = "Gift recipient email can not be your own"
         render :action => :shipping_address
