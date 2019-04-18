@@ -30,7 +30,7 @@ Scenario: unsuccessful gift order for customer gifting to themself
   When I fill in the ".billing_info" fields with "Al Smith, 123 Fake St., Alameda, CA 94501, 510-999-9999, joe3@yahoo.com"
   And I proceed to checkout
   Then I should be on the shipping info page
-  And I should see "Gift recipient email can not be your own"
+  And I should see "Please enter an email that is not your own."
     
 Scenario: Confidential information is removed, street address, phone number
   Given I go to the shipping info page for customer "Tom Foolery"
