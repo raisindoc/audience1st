@@ -3,7 +3,7 @@ require 'will_paginate/array'
 class CustomersController < ApplicationController
 
   # Actions requiring no login, customer login, and staff login respectively
-  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create)
+  ACTIONS_WITHOUT_LOGIN = %w(new user_create forgot_password guest_checkout guest_checkout_create reset_token)
   CUSTOMER_ACTIONS =      %w(show edit update change_password_for change_secret_question)
   ADMIN_ACTIONS =         %w(admin_new create search merge finalize_merge index list_duplicate
                              auto_complete_for_customer_full_name)
@@ -142,6 +142,16 @@ class CustomersController < ApplicationController
     end
   end
 
+  def reset_token
+    token = params[:token]
+    @customer = Customer.where('token LIKE ?', token).first
+    if @customer.nil? || (Time.now).utc >= (@customer.token_created_at + 10.minutes).utc
+      flash[:notice] = "The reset password link has expired"
+      return redirect_to login_path
+    end
+    puts("The token expires at: #{(@customer.token_created_at + 10.minutes).utc}. It is currently: #{(Time.now).utc}")
+    create_session(@customer, 'reset_token')
+  end
   # Regular user creating new account
   def new
     @customer = Customer.new
@@ -182,7 +192,7 @@ class CustomersController < ApplicationController
 
     redirect_to_real_login || continue_as_existing_guest || continue_as_new_guest || render(:action => :guest_checkout)
   end
-  
+
   def user_create
     @customer = Customer.new(params[:customer])
     if @customer.save
@@ -358,7 +368,7 @@ class CustomersController < ApplicationController
 
   def send_new_password(email)
     if email.blank?
-      flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a new password."
+      flash[:notice] = "Please enter the email with which you originally signed up, and we will email you a link to reset your password."
       return nil
     end
     @customer = Customer.where('email LIKE ?', email).first
@@ -367,17 +377,19 @@ class CustomersController < ApplicationController
       return nil
     end
     begin
-      newpass = String.random_string(6)
-      @customer.password = @customer.password_confirmation = newpass
+      lengthOfToken = 15
+      token = rand(36**lengthOfToken).to_s(36)
+      @customer.token = token
+      @customer.token_created_at = Time.now.getutc
       # Save without validations here, because if there is a dup email address,
       # that will cause save-with-validations to fail!
       @customer.save(:validate => false)
-      email_confirmation(:confirm_account_change,@customer, "requested your password for logging in", newpass)
+      email_confirmation(:confirm_account_change, @customer, "", token, request.original_url)
       # will reach this point (and change password) only if mail delivery
       # doesn't raise any exceptions
       Txn.add_audit_record(:txn_type => 'edit',
         :customer_id => @customer.id,
-        :comments => 'Password has been reset')
+        :comments => 'Password reset link has been sent')
       return true
     rescue StandardError => e
       flash[:alert] = e.message +
@@ -411,5 +423,4 @@ class CustomersController < ApplicationController
       session[:guest_checkout] = true
     end
   end
-
 end
