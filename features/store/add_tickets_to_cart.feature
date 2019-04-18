@@ -29,14 +29,4 @@ Scenario: Add regular tickets to my order with a donation
   Then I should be on the Checkout page
   And the cart total price should be $47.00
   And the cart should contain 2 "General" tickets for "October 1, 2010, 7:00pm"
-  And the cart should contain a donation of $17.00 to "General Fund"
-
-Scenario: Allow gift purchase if logged in and approved by box office manager
-  Given the setting "allow gift tickets" is "true"
-  And I go to the store page 
-  Then I should see "This order is a gift" 
-
-Scenario: Prohibit gift purchase if logged in but unapproved by box office manager
-  Given the setting "allow gift tickets" is "false"
-  And I go to the store page 
-  Then I should not see "This order is a gift" 
+  And the cart should contain a donation of $17.00 to "General Fund"  
