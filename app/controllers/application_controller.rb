@@ -106,6 +106,7 @@ class ApplicationController < ActionController::Base
     redirect_to ((r = session.delete(:return_to)) ?
       r.merge(:customer_id => customer) :
       change_password_for_customer_path(customer))
+    flash[:alert] = "Please change your password now"
   end
 
   def find_cart
