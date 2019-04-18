@@ -179,8 +179,8 @@ class StoreController < ApplicationController
 
   def shipping_address
     @mailable = @cart.includes_mailable_items?
-    @recipient ||= (@cart.customer || Customer.new) and return if request.get?
-
+    @recipient ||= Customer.new and return if request.get?
+    
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
     @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
@@ -189,9 +189,12 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    @recipient =  recipient_from_params
-   
+    #byebug
+    recipient = recipient_from_params
+    @recipient, matching =  recipient[0], recipient[1]
     recipient_email = params[:customer][:email]
+
+    session[:matching] = (matching == "found_matching_customer") ? true : false
     if recipient_email == @customer.email
 
         flash.now[:alert] = I18n.t('store.gift_diff_email_notice')
@@ -216,6 +219,9 @@ class StoreController < ApplicationController
 
   def checkout
     redirect_to store_path, :alert => t('store.errors.empty_order') if @cart.cart_empty?
+    if session[:matching]
+        flash.now[:notice] = I18n.t('store.gift_recipient_on_file')  
+    end
     @page_title = "Review Order For #{@customer.full_name}"
     @sales_final_acknowledged = @is_admin || (params[:sales_final].to_i > 0)
     @checkout_message = (@cart.includes_regular_vouchers? ? Option.precheckout_popup : '')
@@ -288,7 +294,7 @@ class StoreController < ApplicationController
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
     recipient = Customer.find_unique(try_customer)
-    (recipient && recipient.valid_as_gift_recipient?) ? recipient : try_customer
+    (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end
 
   def remember_cart_in_session!
