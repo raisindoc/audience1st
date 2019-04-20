@@ -179,7 +179,6 @@ class StoreController < ApplicationController
   def shipping_address
     @mailable = @cart.includes_mailable_items?
     @recipient ||= (@cart.customer || Customer.new) and return if request.get?
-
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
     @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
@@ -189,10 +188,8 @@ class StoreController < ApplicationController
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
     @recipient =  recipient_from_params
-   
-    recipient_email = params[:customer][:email]
-    if recipient_email == @customer.email
-        flash.now[:alert] = "Gift recipient email can not be your own"
+    if @recipient.email == @customer.email
+        flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
         render :action => :shipping_address
         return
     end
