@@ -19,4 +19,12 @@ Scenario: Notify Box Office Manager 3 days before
     Given today is "May 10"
     Then a birthday email should be sent to "mjw@mail.com" containing "janey@mail"
 
-    
+Scenario: Do not notify Box Office Manager 4 days before "Janey's birthday"
+
+    Given today is "May 9"
+    Then no email should be sent to "mhw@mail.com"
+
+Scenario: Do not notify Box Office Manager 2 days before "Janey's birthday"
+
+    Given today is "May 11"
+    Then no email should be sent to "mhw@mail.com"
