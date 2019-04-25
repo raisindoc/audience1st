@@ -188,7 +188,17 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
+    byebug
     @recipient =  recipient_from_params
+    
+    if email_matches_last_name_does_not?
+        flash.now[:alert] = "The email address you entered for the gift recipient is already registered in the system, but the name you entered does not match our records. Please double-check that you entered the gift recipient's name and email address and try again"
+        render :action => :shipping_address
+        return
+    end
+
+
+        
     if @recipient.email == @customer.email
         flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
         render :action => :shipping_address
@@ -281,6 +291,11 @@ class StoreController < ApplicationController
   end
   def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
 
+  def email_matches_last_name_does_not?
+    try_customer = Customer.new(params[:customer])
+    Customer.match_email_not_last_name?(try_customer)
+  end
+  
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
     recipient = Customer.find_unique(try_customer)
