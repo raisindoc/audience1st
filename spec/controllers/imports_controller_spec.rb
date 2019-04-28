@@ -53,7 +53,37 @@ describe ImportsController, :skip => true do
       get :edit, :id => @import
       @import.should_not be_completed
     end
+    context "valid TodayTix CSV file" do
+      it "should raise error if  nonzero number of rows (including header)" do
+          valid_csv = ImportParser.new(@import).valid?
+          valid_csv.should be_truthy
+      end
+      it "should raise error if wrong file extension" do
+          valid_csv = ImportParser.new(@import).valid?
+          valid_csv.should be_truthy
+      end
+      it "should raise error if format errors" do
+          valid_csv = ImportParser.new(@import).valid?
+          valid_csv.should be_truthy
+      end
+    end
     context "valid Customer data" do
+      it "should raise error if email is invalid or missing" do
+          valid_csv = ImportParser.new(@import).valid?
+          valid_csv.should be_truthy
+      end 
+      it "should raise error if ticket type is invalid or missing" do
+          valid_csv = ImportParser.new(@import).valid?
+          valid_csv.should be_truthy
+      end
+      it "should raise error if email is invalid or missing" do
+          valid_csv = ImportParser.new(@import).valid?
+          valid_csv.should be_truthy
+      end
+      it "should raise error if first or last name is missing" do
+          valid_csv = ImportParser.new(@import).valid?
+          valid_csv.should be_truthy
+      end
       it "should use customer/customer_with_errors template for Customer import" do
         allow(@import).to receive(:class).and_return(CustomerImport)
         get :edit, :id => @import

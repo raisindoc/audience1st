@@ -105,6 +105,9 @@ en:
       gift_diff_email_notice: >
         Please enter a gift recipient email different from your own.
 
+      gift_matching_email_diff_address: >
+        We recognize that name and email address, but we have a different mailing address and/or phone number on file for this person.  Please note that we will use our contact information to contact them.  If you believe this is a problem, please contact the box office after completing this gift order.
+
       guest_checkout_not_allowed:  >
         Sorry, guest checkout is unavailable for this order.  Please
         create an account to continue checkout.
