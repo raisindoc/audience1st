@@ -31,6 +31,7 @@ Rails.application.routes.draw do
         get  :list_duplicate
         get  :forgot_password
         post :forgot_password
+        get  :reset_token, :as => 'reset_token'
       end
       member do
         get  :change_password_for

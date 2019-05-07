@@ -66,6 +66,7 @@ class StoreController < ApplicationController
 
   def index
     return_after_login params.except(:customer_id)
+    @logged_in = current_user()  
     @valid_vouchers = []
     @all_shows = []
     @all_showdates = []
@@ -178,8 +179,7 @@ class StoreController < ApplicationController
 
   def shipping_address
     @mailable = @cart.includes_mailable_items?
-    @recipient ||= (@cart.customer || Customer.new) and return if request.get?
-
+    @recipient = Customer.new and return if request.get?
     # request is a POST: collect shipping address
     # record whether we should mail to purchaser or recipient
     @cart.ship_to_purchaser = params[:ship_to_purchaser] if params[:mailable_gift_order]
@@ -188,7 +188,18 @@ class StoreController < ApplicationController
     #  the buyer needs to modify it, great.
     #  Otherwise... create a NEW record based
     #  on the gift receipient information provided.
-    @recipient =  recipient_from_params
+    recipient = recipient_from_params
+    @recipient =  recipient[0]
+    if @recipient.email == @customer.email
+      flash.now[:alert] = I18n.t('store.errors.gift_diff_email_notice') 
+      render :action => :shipping_address
+      return
+    end 
+    if email_matches_diff_last_name?
+        flash.now[:alert] = I18n.t('store.errors.gift_matching_email_diff_last_name')
+        render :action => :shipping_address
+        return
+    end
     # make sure minimal info for gift receipient was specified.
     @recipient.gift_recipient_only = true
     unless @recipient.valid?
@@ -275,13 +286,19 @@ class StoreController < ApplicationController
       (s.next_showdate || s.showdates.first)
   end
   def showdate_from_default ; Showdate.current_or_next(:type => @what) ; end
-
+  def email_matches_diff_last_name?
+    try_customer = Customer.new(params[:customer])
+    Customer.email_matches_diff_last_name?(try_customer)
+  end
   def recipient_from_params
     try_customer = Customer.new(params[:customer])
     recipient = Customer.find_unique(try_customer)
-    (recipient && recipient.valid_as_gift_recipient?) ? recipient : try_customer
+    (recipient && recipient.valid_as_gift_recipient?) ? [recipient,"found_matching_customer"] : [try_customer, "new_customer"]
   end
-
+  def email_last_name_match_diff_address?
+    try_customer = Customer.new(params[:customer])
+    Customer.email_last_name_match_diff_address?(try_customer)
+  end
   def remember_cart_in_session!
     @cart.save!
     session[:cart] = @cart.id
@@ -291,6 +308,12 @@ class StoreController < ApplicationController
     checkout_params = {}
     checkout_params[:sales_final] = true if params[:sales_final]
     checkout_params[:email_confirmation] = true if params[:email_confirmation]
+    matching = recipient_from_params[1]
+    if email_last_name_match_diff_address?
+        flash[:notice] = I18n.t('store.gift_matching_email_last_name_diff_address')
+    elsif matching == "found_matching_customer"
+        flash[:notice] = I18n.t('store.gift_recipient_on_file')  
+    end
     redirect_to checkout_path(@customer, checkout_params)
     true
   end
@@ -372,12 +395,11 @@ class StoreController < ApplicationController
   end
 
   def setup_ticket_menus_for_patron
-
     @valid_vouchers = @sd.valid_vouchers.includes(:vouchertype).map do |v|
       v.customer = @customer
       v.adjust_for_customer @promo_code
     end.find_all(&:visible?).sort_by(&:display_order)
-  
+    
     @all_shows = Show.current_and_future.of_type(@what) || []
     if (@what == 'Regular Show' && !@all_shows.include?(@sh))
       @all_shows << @sh

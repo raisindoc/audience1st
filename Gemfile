@@ -1,6 +1,6 @@
 # -*- mode: ruby; -*-
 source 'https://rubygems.org'
-ruby '2.3.1'
+ruby '2.5.5'
 
 # basic app components
 gem 'pg', '~> 0.21'
@@ -11,7 +11,7 @@ gem 'rack-timeout'              # prevent Heroku dynos from hanging up on timeou
 gem 'where-or'                  # backport from Rails 5; remove when upgrading
 
 gem 'builder'
-gem 'bundler'
+gem 'bundler', '1.17.2'
 gem 'figaro'
 gem 'sslrequirement'
 gem 'haml'
@@ -31,8 +31,8 @@ gem 'will_paginate'
 
 # asset pipeline
 gem 'sprockets-rails', :require => 'sprockets/railtie'
-gem 'uglifier'
 gem 'sassc-rails'
+gem 'uglifier'
 
 group :production do
   gem 'newrelic_rpm'
@@ -45,12 +45,21 @@ group :test do
   gem 'cucumber', '~> 2.0'
   gem 'cucumber-rails', '1.5.0', :require => false
   gem 'capybara'
+  gem 'chronic'
+  gem 'launchy'
+  gem 'rack-test'
+  gem 'coveralls', :require => false
+  gem 'email_spec'
   gem 'fake_stripe'
   gem 'poltergeist'
+  gem 'rspec-rails'
   gem 'rspec-its'
   gem 'rspec-html-matchers'
+  gem 'rspec-collection_matchers' # should have(n).items, etc
+  gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'simplecov', :require => false
   gem 'spring'                  # for 'guard'
+  gem 'timecop'
   gem 'webmock'
   gem 'vcr'
 end
@@ -61,38 +70,24 @@ group :development do
   gem 'ruby-prof'
   gem 'stackprof'
   gem 'web-console', '~> 2.0'
-  gem 'spring-commands-rspec'   # for use with Guard
+  gem 'sdoc', '~> 0.4.0'
 end
 
 group :development, :test do
   # the following really belong in a separate 'staging' environment
-  gem 'faker', :git => 'https://github.com/armandofox/faker' # needed in production too,for adding fake data to staging server
-  gem 'factory_bot_rails'                                    # used by fake_data stuff
-
+  gem 'faker', :git => 'https://github.com/armandofox/faker'
+  gem 'factory_bot_rails'       # used by fake_data stuff
   gem 'bullet'
-  # cucumber and capybara
-  gem 'yaml_db', :git => 'https://github.com/armandofox/yaml_db'
   gem 'byebug'                  # 4
   gem 'pry'
   gem 'listen', '~> 2.2'
   gem 'guard-rspec', :require => false
   gem 'guard-cucumber'
+  gem 'spring-commands-rspec'   # for use with Guard
   gem 'minitest'
   gem 'faye-websocket'
   gem 'database_cleaner'
   gem 'rb-readline'
-  gem 'rubyzip'
-  gem 'mime-types'
-  gem 'chronic'
-  gem 'fakeweb'
-  gem 'launchy'
-  gem 'rack-test'
-  gem 'sdoc', '~> 0.4.0'
-  gem 'coveralls', :require => false
-  gem 'rspec-rails'
-  gem 'rspec-collection_matchers' # should have(n).items, etc
-  gem 'rspec-activemodel-mocks'   # mock_model(Customer), etc
   gem 'sqlite3'
-  gem 'timecop'
   gem 'traceroute'
 end

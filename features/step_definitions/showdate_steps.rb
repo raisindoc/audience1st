@@ -10,7 +10,7 @@ Given /^(\d+ )?(.*) vouchers costing \$([0-9.]+) are available for (?:this|that)
   make_valid_tickets(@showdate, @vouchertype, n.to_i)
 end
 
-Given /^(\d+) "(.*)" comps are available for "(.*)" on "(.*)"(?: with promo code "(.*)")$/ do |num,comp_type,show_name,date,code|
+Given /^(\d+) "(.*)" comps are available for "(.*)" on "([^\"]+)"(?: with promo code "(.*)")?$/ do |num,comp_type,show_name,date,code|
   show_date = Time.zone.parse(date)
   @showdate = setup_show_and_showdate(show_name,show_date)
   @comp = create(:comp_vouchertype, :name => comp_type, :season => show_date.year)
@@ -39,6 +39,14 @@ end
 
 Then /^"(.*)" should have (\d+) showdates$/ do |show,num|
   Show.find_by_name!(show).showdates.count.should == num.to_i
+end
+
+Then /the showdate should have the following attributes:/ do |tbl|
+  expect(@showdate).to be_a_kind_of Showdate
+  @showdate.reload
+  tbl.hashes.each do |attr|
+    expect(@showdate.send(attr['attribute']).to_s).to eq(attr['value'].to_s)
+  end
 end
 
 Then /^the following showdates for "(.*)" should exist:$/ do |showname,dates|

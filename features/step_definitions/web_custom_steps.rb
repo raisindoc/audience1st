@@ -2,6 +2,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 
 World(ModelAccess)
 
+# Element should be disabled
+Then /^the "(.*)" (?:checkbox|button|field|control) should be disabled/ do |field|
+  expect(page).to have_field(field, :disabled => true)
+end
+
 # Field should have value
 Then /^the "(.*)" field should be "(.*)"$/ do |field,val|
   page.should have_field(field, :with => val)
@@ -125,3 +130,9 @@ When /^I fill in the "(.*)" fields as follows:$/ do |fieldset, table|
   end
 end
 
+# Lets you write step def such as:
+# Then I should see the message for "customers.confirm_delete"
+Then /I should see the message for "(.*)"/ do |i18n_key| 
+  message = I18n.translate!(i18n_key)
+  page.should have_content(message)
+end
